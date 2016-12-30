@@ -63,4 +63,8 @@ def test(strMatch):
 	assert strMatch("123", "21233") == 1
 	assert strMatch("123", "121233") == 2
 	assert strMatch("ha?", "123") == -1
+	assert strMatch("ABABAC", "ABABABCABABABCABABABC") = -1
 	print("congratulations, the function works correctly!")
+
+test(naiveLoop)
+test(kmp)
