@@ -8,25 +8,21 @@ class ConcurrentStack[T]{
 
     def size = data.get.size
 
-    def push(elem: T) = {
+    @tailrec final def push(elem: T): Unit = {
         var current = data.get
         var newList = elem :: current
-        while(!data.compareAndSet(current, newList)){
-            current = data.get
-            newList = elem :: current
-        }
+        if(!data.compareAndSet(current, newList))
+            push(elem)
     }
 
-    def pop = {
+    @tailrec final def pop: T = {
         var current = data.get
         var newList = data.get.tail
         var result = data.get.head
-        while(!data.compareAndSet(current, newList)){
-            current = data.get
-            newList = data.get.tail
-            result = data.get.head
-        }
-        result
+        if(data.compareAndSet(current, newList))
+            result
+        else
+            pop
     }
 }
 
