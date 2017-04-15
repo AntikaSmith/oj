@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicReference
 
 //retry if push or pop failed to make the stack to be thread-safe
 class ConcurrentStack[T]{
-    private val data = new AtomicReference(List[T]())
+    private[this] val data = new AtomicReference(List[T]())
 
     def size = data.get.size
 
