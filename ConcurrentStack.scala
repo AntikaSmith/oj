@@ -44,27 +44,37 @@ def concurrentRun[T, U](threadsNum: Int, func: (ThreadNum, U) => T, param: U) = 
 }
 
 def test() = {
+    import java.util.concurrent.CountDownLatch
+
     //concrrent push test
     val stack = new ConcurrentStack[Int]
     val threadsNum = 10
     val runTimes = 1000
+    val pushLatch = new CountDownLatch(threadsNum)
 
     val pushFunc: (ThreadNum, Int) => Unit  = {(_, y) =>
         for(x <- 1 to runTimes){
             stack.push(x)
         }
+        pushLatch.countDown
     }
-    concurrentRun(10, pushFunc, 0)
-    assert(stack.size == 10000)
+    concurrentRun(threadsNum, pushFunc, 0)
+    pushLatch.await()
+    assert(stack.size == threadsNum * runTimes)
 
     //concurrent pop test
     val bufferArray = Array.fill(threadsNum)(List[Int]())
+    val popLatch = new CountDownLatch(threadsNum)
     val popFunc: (ThreadNum, Array[List[Int]]) => Unit = {(no, arr) =>
         for(_ <- 1 to runTimes)
             arr(no) = stack.pop :: arr(no)
+        popLatch.countDown
     }
-    concurrentRun(10, popFunc, bufferArray)
+    concurrentRun(threadsNum, popFunc, bufferArray)
+    popLatch.await()
     assert(stack.size == 0)
     assert(bufferArray.map(_.sum).sum == 5005000)
-}
 
+    println("all test is passed")
+}
+test
