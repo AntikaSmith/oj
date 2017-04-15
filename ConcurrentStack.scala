@@ -1,6 +1,7 @@
 package com.interview
 
 import java.util.concurrent.atomic.AtomicReference
+import scala.annotation.tailrec
 
 //retry if push or pop failed to make the stack to be thread-safe
 class ConcurrentStack[T]{
